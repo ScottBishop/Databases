@@ -1,3 +1,3 @@
-database: Launcher.java GUI.java
-	javac Launcher.java GUI.java
-	java Launcher
+database: Launcher.java GUI.java ProjectLauncher.java
+	javac Launcher.java GUI.java ProjectLauncher.java
+	java ProjectLauncher
