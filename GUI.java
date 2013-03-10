@@ -6,8 +6,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.plaf.FontUIResource;
 
-
-
 public class GUI extends JFrame {
 	private JButton deposit;
 	private JButton withdrawl;
@@ -45,9 +43,15 @@ public class GUI extends JFrame {
 
 	JScrollPane scroller;
 
-	public GUI() { 
+	DB db;
+	int id;
+
+	public GUI(DB mydb, int myid) {
 	super("Trader Interface"); // superclass constructor sets the title
 	setLayout(null);
+
+	db = mydb;
+	id = myid;
 
 	FontUIResource fbold = new FontUIResource(Font.SANS_SERIF,Font.BOLD,14);
 	FontUIResource fplain = new FontUIResource(Font.SANS_SERIF,Font.PLAIN,16);
@@ -144,14 +148,63 @@ public class GUI extends JFrame {
 	// The only thing we want to wait for is a click on the button
 	MyHandler handler = new MyHandler();
 		deposit.addActionListener(handler);
-
+		withdrawl.addActionListener(handler);
+		buy.addActionListener(handler);
+		sell.addActionListener(handler);
+		topMovies.addActionListener(handler);
+		viewActorProfile.addActionListener(handler);
+		movieInfo.addActionListener(handler);
+		movieReviews.addActionListener(handler);
+		transactionHistory.addActionListener(handler);
+		showBalance.addActionListener(handler);
     } // MyJFrame
 
     // inner class
     private class MyHandler implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
     		if (event.getSource() == deposit){
-    			infoArea.append("BUTTON CLICKED\n");
+    			
+    			String strAmount = depositField.getText();
+    			int amount = Integer.parseInt(strAmount);
+    			infoArea.append(strAmount);
+    			infoArea.append("\n");
+    		}
+    		else if (event.getSource() == withdrawl){
+    			String strAmount = withdrawlField.getText();
+    			int amount = Integer.parseInt(strAmount);
+    			infoArea.append(id + "");
+    		}
+    		else if (event.getSource() == buy){
+    			String strStockID = buyField1.getText();
+    			String strAmount = buyField2.getText();
+    			int amount = Integer.parseInt(strAmount);
+
+    		}
+    		else if (event.getSource() == sell){
+    			String strStockID = sellField1.getText();
+    			String strAmount = sellField2.getText();
+    			int amount = Integer.parseInt(strAmount);
+    		}
+    		else if (event.getSource() == topMovies){
+    			String strStartDate = startDate.getText();
+    			String strEndDate = endDate.getText();
+    			int intStartDate = Integer.parseInt(strStartDate);
+    			int intEndDate = Integer.parseInt(strEndDate);
+    		}
+    		else if (event.getSource() == viewActorProfile){
+    			String strStockID = actorProfile.getText();
+    		}
+    		else if (event.getSource() == movieInfo){
+    			String movieTitle = movieInfoField.getText();
+    		}
+    		else if (event.getSource() == movieReviews){
+    			String strMovieReviews = movieReviewsField.getText();
+    		}
+    		else if (event.getSource() == transactionHistory){
+    			infoArea.append("BUTTON CLICKED8\n");
+    		}
+    		else if (event.getSource() == showBalance){
+    			infoArea.append("BUTTON CLICKED9\n");
     		}
 	} // actionPerformed
 	

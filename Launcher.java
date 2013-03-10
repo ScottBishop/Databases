@@ -7,17 +7,29 @@ import javax.swing.*;
 public class Launcher extends JFrame {
 
 	JTextField userTextField;
-	JPasswordField passTextField;
+	JTextField passTextField;
 	JFrame frame;
 	Container content;
 	JButton button;
 	JPanel userPanel;
 	JLabel userLabel;
 	JPanel passPanel;
+	JPanel loginPanel;
 	JLabel passLabel;
 	JPanel panel;
+	DB db;
 
 	public Launcher(){
+
+		db = new DB();
+
+		try{
+			db.start();
+		}
+		catch( Exception e){
+			e.printStackTrace();
+		}
+		
 
 		String title = "Login";
 		frame = new JFrame(title);
@@ -35,15 +47,16 @@ public class Launcher extends JFrame {
 		passPanel = new JPanel(new BorderLayout());
 		passLabel = new JLabel("Password: ");
 		passLabel.setDisplayedMnemonic(KeyEvent.VK_P);
-		passTextField = new JPasswordField();
+		passTextField = new JTextField();
 		passLabel.setLabelFor(passTextField);
 		passPanel.add(passLabel, BorderLayout.WEST);
 		passPanel.add(passTextField, BorderLayout.CENTER);
 
+		passPanel.add(button, BorderLayout.SOUTH);
+
 		panel = new JPanel(new BorderLayout());
 		panel.add(userPanel, BorderLayout.NORTH);
 		panel.add(passPanel, BorderLayout.SOUTH);
-		panel.add(button, BorderLayout.EAST);
 		content.add(panel, BorderLayout.NORTH);
 
 		// The only thing we want to wait for is a click on the button
@@ -61,10 +74,18 @@ public class Launcher extends JFrame {
     	public void actionPerformed(ActionEvent event) {
     		if (event.getSource() == button){
     			String name = userTextField.getText();
-    			char[] password = passTextField.getPassword();
-    			String passwordString = password.toString();
-    			if(name.equals("test")){
-    				GUI gui = new GUI();
+    			String password = passTextField.getText();
+
+    			int id = 0;
+    			try{
+    				id = db.login(name, password);
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}
+
+    			if(id != 0){
+    				GUI gui = new GUI(db, id);
     				gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     				gui.setSize(700,800);
     				gui.setVisible(true);
