@@ -90,7 +90,7 @@ public class GUI extends JFrame {
 	sellField2.setBounds(590,70,75,30);
 	sellAmt = new JLabel("Amount",JLabel.LEFT);
 	sellAmt.setBounds(600,100,150,20);
-	
+
 	topMovies = new JButton("Top Movies");
 	topMovies.setBounds(20,130,150,40);
 	startDate = new JTextField("",10); // 10 wide, and initially empty
@@ -136,7 +136,7 @@ public class GUI extends JFrame {
 	scroller = new JScrollPane(infoArea);
 	scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	scroller.setBounds(20,325,640,440);
-		
+
 	// add everything to the panel
 	add(deposit);add(withdrawl);add(buy);add(sell);
 	add(depositField);add(withdrawlField);add(buyField1); add(buyField2); add(sellField1); add(sellField2);
@@ -163,22 +163,54 @@ public class GUI extends JFrame {
     private class MyHandler implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
     		if (event.getSource() == deposit){
-    			
     			String strAmount = depositField.getText();
     			int amount = Integer.parseInt(strAmount);
-    			infoArea.append(strAmount);
-    			infoArea.append("\n");
+    			try{
+    				db.deposit(amount,id);
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}
+    			infoArea.append(strAmount + " was desposited into your Market Account.\n";
     		}
     		else if (event.getSource() == withdrawl){
     			String strAmount = withdrawlField.getText();
     			int amount = Integer.parseInt(strAmount);
-    			infoArea.append(id + "");
+    			int balance = 0;
+    			try{
+    				balance = db.getMarketBalance(id);
+    				if(balance >= amount){
+    					db.withdraw(amount,id);
+    					infoArea.append(strAmount + " was withdrawn from your Market Account.\n";
+    				}
+    				else{
+    					infoArea.append("You do not have enough money in your Market Account to withdraw " + strAmount + ".\n";
+    				}
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}
     		}
     		else if (event.getSource() == buy){
     			String strStockID = buyField1.getText();
     			String strAmount = buyField2.getText();
     			int amount = Integer.parseInt(strAmount);
-
+    			int price = 0; int balance = 0;
+    			try{
+    				price = db.getCurrentStockPrice(strStockID);
+    				balance = db.getMarketBalance(id);
+    				if(balance >= (price * amount)){
+    					db.withdraw((price * amount),id);
+    					db.addStock(strStockID, amount, id);
+    					infoArea.append(amount + " shares of " + strStockID + " were purchased.\n";
+    				}
+    				else{
+    					infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + ".\n";
+    				}
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}			
     		}
     		else if (event.getSource() == sell){
     			String strStockID = sellField1.getText();
@@ -207,6 +239,6 @@ public class GUI extends JFrame {
     			infoArea.append("BUTTON CLICKED9\n");
     		}
 	} // actionPerformed
-	
+
     }// innerclass MyHandler
 } // outerclass MyJFrame
