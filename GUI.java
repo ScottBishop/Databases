@@ -162,6 +162,7 @@ public class GUI extends JFrame {
     // inner class
     private class MyHandler implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
+    		//DEPOSIT
     		if (event.getSource() == deposit){
     			String strAmount = depositField.getText();
     			int amount = Integer.parseInt(strAmount);
@@ -173,6 +174,7 @@ public class GUI extends JFrame {
     			}
     			infoArea.append(strAmount + " was desposited into your Market Account.\n");
     		}
+    		//WITHDRAW
     		else if (event.getSource() == withdrawl){
     			String strAmount = withdrawlField.getText();
     			int amount = Integer.parseInt(strAmount);
@@ -191,50 +193,100 @@ public class GUI extends JFrame {
     				e.printStackTrace();
     			}
     		}
+    		//BUY
     		else if (event.getSource() == buy){
     			String strStockID = buyField1.getText();
     			String strAmount = buyField2.getText();
     			int amount = Integer.parseInt(strAmount);
     			double price = 0; double balance = 0;
     			try{
-    				price = db.getCurrentStockPrice(strStockID);
-    				balance = db.getMarketBalance(id);
-    				if(balance >= (price * amount)){
-    					db.withdraw((price * amount),id);
-    					db.addStock(strStockID, amount, id);
-    					infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");
+    				if(db.checkStockExists()){
+    					price = db.getCurrentStockPrice(strStockID);
+    					balance = db.getMarketBalance(id);
+    					if(balance >= ((price * amount) + 20)){
+    						db.withdraw(((price * amount) + 20),id);
+    						db.addStock(strStockID, amount, id);
+    						infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");	
+    					}
+    					else{
+    						infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + "\n");
+    					}
     				}
     				else{
-    					infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + "\n");
+    					infoArea.append(strStockID + " is not a valid stock ID.\n");
     				}
     			}
     			catch (Exception e){
     				e.printStackTrace();
     			}			
     		}
+    		//SELL
     		else if (event.getSource() == sell){
     			String strStockID = sellField1.getText();
     			String strAmount = sellField2.getText();
     			int amount = Integer.parseInt(strAmount);
+    			double price = 0; double shares = 0;
+    			try{
+    				if(db.checkStockExists()){
+    					price = db.getCurrentStockPrice(strStockID);
+    					shares = db.getNumShares(strStockID, id);
+    					if(shares >= amount){
+    						db.deposit(((price * amount) - 20),id);
+    						db.sellStock(strStockID, amount, id);
+    						infoArea.append(amount + " shares of " + strStockID + " were sold.\n");	
+    					}
+    					else{
+    						infoArea.append("You do not have enough shares in your stock account to sell " + amount + " shares of " + strStockID + "\n");
+    					}
+    				}
+    				else{
+    					infoArea.append(strStockID + " is not a valid stock ID.\n");
+    				}
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}			
     		}
+    		//TOP MOVIES
     		else if (event.getSource() == topMovies){
     			String strStartDate = startDate.getText();
     			String strEndDate = endDate.getText();
     			int intStartDate = Integer.parseInt(strStartDate);
     			int intEndDate = Integer.parseInt(strEndDate);
     		}
+    		//VIEW ACTOR PROFILE
     		else if (event.getSource() == viewActorProfile){
     			String strStockID = actorProfile.getText();
+    			try{
+					if(db.checkStockExists()){
+						infoArea.append("" + db.getActorProfile(strStockID));
+					}
+					else{
+    					infoArea.append(strStockID + " is not a valid stock ID.\n");
+    				}
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}
     		}
+    		//MOVIE INFO
     		else if (event.getSource() == movieInfo){
     			String movieTitle = movieInfoField.getText();
     		}
+    		//MOVIE REVIEWS
     		else if (event.getSource() == movieReviews){
     			String strMovieReviews = movieReviewsField.getText();
     		}
+    		//TRANSACTION HISTORY
     		else if (event.getSource() == transactionHistory){
-    			infoArea.append("BUTTON CLICKED8\n");
+    			if(db.checkTransactionHistory(id)){
+    				infoArea.append(db.getTransactionHistory(id) + "");
+    			}
+    			else{
+    				infoArea.append("You have not made any transactions.\n");
+    			}
     		}
+    		//SHOW BALANCE
     		else if (event.getSource() == showBalance){
     			double balance = 0;
     			try{
