@@ -31,11 +31,11 @@ public class DB {
     }
 
     public double getMarketBalance(int id) throws SQLException {
-		String query = "select Balance from Market where tax_ID = '" + id + "'";
+		String query = "select balance from Market where tax_ID = '" + id + "'";
 		ResultSet rs = stmt.executeQuery(query);
 		double balance=0;
 		while (rs.next()){
-			balance = rs.getDouble("Balance");
+			balance = rs.getDouble("balance");
 		}
 		rs.close();
 		return balance;
