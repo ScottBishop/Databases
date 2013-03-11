@@ -20,57 +20,74 @@ public class DB {
 	}
 
     public int login(String username, String password) throws SQLException {
-		String query = "select tax_ID from Customer where username = '" + username + "'' and password = '" + password + "';";
+		String query = "select tax_ID from Customer where username = '" + username + "' and password = '" + password + "'";
 		ResultSet rs = stmt.executeQuery (query);
-		int id = rs.getInt("tax_ID");
+		int id =0;
+		while (rs.next()){
+			id = rs.getInt("tax_ID");
+		}
 		rs.close();
 		return id;
     }
 
     public double getMarketBalance(int id) throws SQLException {
-		String query = "select Balance from Market where tax_ID = '" + id + "';";
+		String query = "select Balance from Market where tax_ID = '" + id + "'";
 		ResultSet rs = stmt.executeQuery(query);
-		double balance = rs.getDouble("Balance");
+		double balance=0;
+		while (rs.next()){
+			balance = rs.getDouble("Balance");
+		}
 		rs.close();
 		return balance;
     }
 
-    public int getCurrentStockPrice(String actorID) throws SQLException {
-		String query = "select current_price from Actors where actor_id = '" + actorID + "';";
+    public double getCurrentStockPrice(String actorID) throws SQLException {
+		String query = "select current_price from Actors where actor_id = '" + actorID + "'";
 		ResultSet rs = stmt.executeQuery(query);
-		double price = rs.getDouble("current_price");
+		double price=0;
+		while (rs.next()){
+			price = rs.getDouble("current_price");
+		}
 		rs.close();
 		return price;
     }
 
    public void deposit(double amount, int id) throws SQLException {
-		String query = "select Balance from Market where tax_ID = '" + id + "';";
+		String query = "select Balance from Market where tax_ID = '" + id + "'";
 		ResultSet rs = stmt.executeQuery(query);
-		int amount += rs.getInt("Balance");
-		query = "update Market set Balance = " + amount + " where tax_ID = '" + id + "';";
+		while (rs.next()){
+			amount += rs.getInt("Balance");
+		}
+		query = "update Market set Balance = " + amount + " where tax_ID = '" + id + "'";
 		rs = stmt.executeQuery(query);
 		rs.close();
     } 
 
     public void withdraw(double amount, int id) throws SQLException {
-		String query = "select Balance from Market where tax_ID = '" + id + "';";
+		String query = "select Balance from Market where tax_ID = '" + id + "'";
 		ResultSet rs = stmt.executeQuery(query);
-		int balance = rs.getInt("Balance");
-		query = "update Market set Balance = " + (balance - amount) + " where tax_ID = '" + id + "';";
+		int balance=0;
+		while (rs.next()){
+			balance = rs.getInt("Balance");
+		}
+		query = "update Market set Balance = " + (balance - amount) + " where tax_ID = '" + id + "'";
 		rs = stmt.executeQuery(query);
 		rs.close();
     }
 
     public void addStock(String stockID, int amount, int id) throws SQLException {
-		String query = "select Shares from Stock where tax_ID = '" + id + "' and actor_id = '" + stockID + "';";
+		String query = "select Shares from Stock where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
 		ResultSet rs = stmt.executeQuery(query);
-		int currentAmount = rs.getInt("Shares");
+		int currentAmount = 0;
+		while (rs.next()){
+			currentAmount = rs.getInt("Shares");
+		}
 		if(currentAmount != 0){
-			query = "update Stock set Shares = " + (currentAmount + amount) + " where tax_ID = '" + id + "' and actor_id = '" + stockID + "';";
+			query = "update Stock set Shares = " + (currentAmount + amount) + " where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
 			rs = stmt.executeQuery(query);
 		}
 		else{
-			query = "insert into Stock values (" + id + "," + amount + ",'" + stockID + "');"; 
+			query = "insert into Stock values (" + id + "," + amount + ",'" + stockID + "')"; 
 			rs = stmt.executeQuery(query);
 		}
 		rs.close();

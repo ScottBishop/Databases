@@ -171,20 +171,20 @@ public class GUI extends JFrame {
     			catch (Exception e){
     				e.printStackTrace();
     			}
-    			infoArea.append(strAmount + " was desposited into your Market Account.\n";
+    			infoArea.append(strAmount + " was desposited into your Market Account.\n");
     		}
     		else if (event.getSource() == withdrawl){
     			String strAmount = withdrawlField.getText();
     			int amount = Integer.parseInt(strAmount);
-    			int balance = 0;
+    			double balance = 0;
     			try{
     				balance = db.getMarketBalance(id);
     				if(balance >= amount){
     					db.withdraw(amount,id);
-    					infoArea.append(strAmount + " was withdrawn from your Market Account.\n";
+    					infoArea.append(strAmount + " was withdrawn from your Market Account.\n");
     				}
     				else{
-    					infoArea.append("You do not have enough money in your Market Account to withdraw " + strAmount + ".\n";
+    					infoArea.append("You do not have enough money in your Market Account to withdraw " + strAmount + ".\n");
     				}
     			}
     			catch (Exception e){
@@ -195,17 +195,17 @@ public class GUI extends JFrame {
     			String strStockID = buyField1.getText();
     			String strAmount = buyField2.getText();
     			int amount = Integer.parseInt(strAmount);
-    			int price = 0; int balance = 0;
+    			double price = 0; double balance = 0;
     			try{
     				price = db.getCurrentStockPrice(strStockID);
     				balance = db.getMarketBalance(id);
     				if(balance >= (price * amount)){
     					db.withdraw((price * amount),id);
     					db.addStock(strStockID, amount, id);
-    					infoArea.append(amount + " shares of " + strStockID + " were purchased.\n";
+    					infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");
     				}
     				else{
-    					infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + ".\n";
+    					infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + "\n");
     				}
     			}
     			catch (Exception e){
@@ -236,8 +236,20 @@ public class GUI extends JFrame {
     			infoArea.append("BUTTON CLICKED8\n");
     		}
     		else if (event.getSource() == showBalance){
-    			infoArea.append("BUTTON CLICKED9\n");
-    		}
+    			double balance = 0;
+    			try{
+    				balance = db.getMarketBalance(id);
+    				if(balance != 0){
+    					infoArea.append("Your current market balance is " + balance + "\n");
+    				}
+    				else{
+    					infoArea.append("You do not have a market account.\n");
+    				}
+    			}
+    			catch (Exception e){
+    				e.printStackTrace();
+    			}
+       		}
 	} // actionPerformed
 
     }// innerclass MyHandler
