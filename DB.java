@@ -50,7 +50,7 @@ public class DB {
 		return id;
     }
 
-    public int newCustomer(String name, String username, String password, String address, String state, int phone, String email, int ssn) throws SQLException{
+    public int newCustomer(String name, String username, String password, String address, String state, String phone, String email, String ssn) throws SQLException{
     	int account_ID = 0; int tax_ID = 0; Boolean notFound = true; ResultSet rs; String foundUsername = "";
     	String query = "";
     	while(notFound){
