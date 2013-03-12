@@ -33,6 +33,17 @@ public class DB {
 		return id;
     }
 
+    public int loginAdmin(String username, String password) throws SQLException {
+		String query = "select tax_ID from Customer where username = '" + username + "' and password = '" + password + "' and isAdmin = 'y'";
+		ResultSet rs = stmt.executeQuery (query);
+		int id =0;
+		while (rs.next()){
+			id = rs.getInt("tax_ID");
+		}
+		rs.close();
+		return id;
+    }
+
     public int newCustomer(String name, String username, String password, String address, String state, int phone, String email, int ssn){
     	int account_ID = 0; int tax_ID = 0; Boolean notFound = true; ResultSet rs; String foundUsername = "";
     	while(notFound){
