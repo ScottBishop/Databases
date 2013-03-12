@@ -54,20 +54,21 @@ public class DB {
     	int account_ID = 0; int tax_ID = 0; Boolean notFound = true; ResultSet rs; String foundUsername = "";
     	String query = "";
     	while(notFound){
+    		foundUsername = "";
     		tax_ID = random.nextInt(9000) + 1000;
-    		query = "select username from Customer where tax_ID = " + tax_ID;
+    		query = "select username from Customer where tax_ID = '" + tax_ID + "'";
     		rs = stmt.executeQuery (query);
     		while (rs.next()){
 				foundUsername = rs.getString("username");
 			}
-			if(foundUsername == null){
+			if(foundUsername.isEmpty()){
 				notFound = false;
 			}
     	}
     	query = "select max(account_ID) from Customer";
     	rs = stmt.executeQuery (query);
     		while (rs.next()){
-				account_ID = rs.getInt("actor_id");
+				account_ID = rs.getInt(1);
 			}
 		account_ID++;
     	query = "insert into Customer values('" + username + "','" + password + "','" + name + "','" + state + "'," 

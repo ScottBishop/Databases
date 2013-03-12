@@ -182,9 +182,9 @@ public class Signup extends JFrame {
     			//call andrews signup function
 				userField.setText("made it");
 				try{
-					//tax_ID = db.newCustomer(name, username, password, address, state, phoneNum, email, ssn);
+					tax_ID = db.newCustomer(name, username, password, address, state, phoneNum, email, ssn);
 					// some sort of bug causing newCustomer to crash
-					//if(tax_ID != 0){
+					if(tax_ID != 0){
 						nameTextField.setText("about to switch");
 						GUI gui = new GUI(db, tax_ID);
 						gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -192,7 +192,7 @@ public class Signup extends JFrame {
 						gui.setVisible(true);
 						gui.setResizable(false);
 						frame.dispose();
-					//}
+					}
 				}
 				catch (Exception e){
 					e.printStackTrace();
