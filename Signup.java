@@ -147,7 +147,7 @@ public class Signup extends JFrame {
 		six.add(four, BorderLayout.NORTH);
 		six.add(seven, BorderLayout.SOUTH);
 
-	
+
 		mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(three, BorderLayout.NORTH);
 		mainPanel.add(six, BorderLayout.SOUTH);
@@ -166,29 +166,43 @@ public class Signup extends JFrame {
 	}
 
 
-	 private class MyHandler implements ActionListener {
-    	public void actionPerformed(ActionEvent event) {
-    		if (event.getSource() == done){
-    			String username = userField.getText();
-    			String password = passField.getText();
-    			String name = nameTextField.getText();
-    			String address = addressTextField.getText();
-    			String state = stateTextField.getText();
-    			String phoneNum = phoneNumField.getText();
-    			String email = emailTextField.getText();
-    			String ssn = ssnTextField.getText();
+	private class MyHandler implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			int tax_ID =0;
+			if (event.getSource() == done){
+				String username = userField.getText();
+				String password = passField.getText();
+				String name = nameTextField.getText();
+				String address = addressTextField.getText();
+				String state = stateTextField.getText();
+				String phoneNum = phoneNumField.getText();
+				long longphoneNum = Long.parseLong(phoneNum.trim());
+				int intphoneNum = (int) longphoneNum;
+				String email = emailTextField.getText();
+				String ssn = ssnTextField.getText();
+				long longssn = Long.parseLong(ssn.trim());
+				int intssn = (int) longssn;
 
     			//call andrews signup function
- 
-    			GUI gui = new GUI(db, id);
-    			gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    			gui.setSize(700,800);
-   				gui.setVisible(true);
-    			gui.setResizable(false);
-   				frame.dispose();
 
-    		}
-    	}
-    }
+				try{
+					tax_ID = db.newCustomer(name, username, password, address, state, intphoneNum, email, intssn);
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
+
+				if(tax_ID != 0){
+					GUI gui = new GUI(db, tax_ID);
+					gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					gui.setSize(700,800);
+					gui.setVisible(true);
+					gui.setResizable(false);
+					frame.dispose();
+				}
+
+			}
+		}
+	}
 
 }

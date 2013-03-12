@@ -200,12 +200,12 @@ public class GUI extends JFrame {
     			int amount = Integer.parseInt(strAmount);
     			double price = 0; double balance = 0;
     			try{
-    				if(db.checkStockExists()){
+    				if(db.checkStockExists(strStockID)){
     					price = db.getCurrentStockPrice(strStockID);
     					balance = db.getMarketBalance(id);
     					if(balance >= ((price * amount) + 20)){
     						db.withdraw(((price * amount) + 20),id);
-    						db.addStock(strStockID, amount, id);
+    						db.addStock(strStockID, amount, id, price);
     						infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");	
     					}
     					else{
@@ -227,12 +227,12 @@ public class GUI extends JFrame {
     			int amount = Integer.parseInt(strAmount);
     			double price = 0; double shares = 0;
     			try{
-    				if(db.checkStockExists()){
+    				if(db.checkStockExists(strStockID)){
     					price = db.getCurrentStockPrice(strStockID);
     					shares = db.getNumShares(strStockID, id);
     					if(shares >= amount){
     						db.deposit(((price * amount) - 20),id);
-    						db.sellStock(strStockID, amount, id);
+    						db.sellStock(strStockID, amount, id, price);
     						infoArea.append(amount + " shares of " + strStockID + " were sold.\n");	
     					}
     					else{
@@ -258,7 +258,7 @@ public class GUI extends JFrame {
     		else if (event.getSource() == viewActorProfile){
     			String strStockID = actorProfile.getText();
     			try{
-					if(db.checkStockExists()){
+					if(db.checkStockExists(strStockID)){
 						infoArea.append("" + db.getActorProfile(strStockID));
 					}
 					else{
@@ -279,11 +279,16 @@ public class GUI extends JFrame {
     		}
     		//TRANSACTION HISTORY
     		else if (event.getSource() == transactionHistory){
-    			if(db.checkTransactionHistory(id)){
-    				infoArea.append(db.getTransactionHistory(id) + "");
+    			try{
+    				if(db.checkTransactionHistory(id)){
+    					infoArea.append(db.getTransactionHistory(id) + "");
+    				}
+    				else{
+    					infoArea.append("You have not made any transactions.\n");
+    				}
     			}
-    			else{
-    				infoArea.append("You have not made any transactions.\n");
+    			catch (Exception e){
+    				e.printStackTrace();
     			}
     		}
     		//SHOW BALANCE

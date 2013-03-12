@@ -100,16 +100,26 @@ public class Launcher extends JFrame {
     			String password = passTextField.getText();
 
     			if (isAdmin.isSelected()){
-    				userTextField.setText("isChecked");
-    				//query database for isAdmin
+
+    				try{
+    					id = db.loginAdmin(name, password);
+    				}
+    				catch (Exception e){
+    					e.printStackTrace();
+    				}
+    				
+    				if(id != 0){
+    					//call new Admin gui
+    					Admin ad = new Admin(db, id);
+    					frame.dispose();
+    				}
+
+    			
     			}
     			else if (signUp.isSelected()){
     				//call db signup function with username and password
     				Signup su = new Signup(name, password, db, id);
-    				// su.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    				// su.setSize(700,800);
-    				// su.setVisible(true);
-    				// su.setResizable(false);
+    				
     				frame.dispose();
     			}
     			else{
