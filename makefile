@@ -1,5 +1,5 @@
-database: Launcher.java GUI.java ProjectLauncher.java DB.java
-	javac Launcher.java GUI.java ProjectLauncher.java DB.java
+database: Launcher.java GUI.java ProjectLauncher.java DB.java Signup.java
+	javac Launcher.java GUI.java ProjectLauncher.java DB.java Signup.java
 	java ProjectLauncher
 
 setup:
