@@ -14,6 +14,8 @@ public class PasswordFieldSample {
     JFrame frame = new JFrame(title);
     Container content = frame.getContentPane();
 
+    JCheckBox isAdmin = new JCheckBox();
+
     JPanel userPanel = new JPanel(new BorderLayout());
     JLabel userLabel = new JLabel("Username: ");
     userLabel.setDisplayedMnemonic(KeyEvent.VK_U);

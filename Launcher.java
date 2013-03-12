@@ -17,6 +17,10 @@ public class Launcher extends JFrame {
 	JPanel loginPanel;
 	JLabel passLabel;
 	JPanel panel;
+	JCheckBox isAdmin;
+	JCheckBox signUp;
+	JPanel boxPanel;
+	JPanel checkIt;
 	DB db;
 
 	public Launcher(){
@@ -35,6 +39,12 @@ public class Launcher extends JFrame {
 		frame = new JFrame(title);
 		content = frame.getContentPane();
 
+		isAdmin = new JCheckBox("Login as Admin");
+		isAdmin.setMnemonic(KeyEvent.VK_C);
+
+		signUp = new JCheckBox("Sign Up");
+		isAdmin.setMnemonic(KeyEvent.VK_C);
+
 		button = new JButton("Login");
 		userPanel = new JPanel(new BorderLayout());
 		userLabel = new JLabel("Username: ");
@@ -52,7 +62,16 @@ public class Launcher extends JFrame {
 		passPanel.add(passLabel, BorderLayout.WEST);
 		passPanel.add(passTextField, BorderLayout.CENTER);
 
-		passPanel.add(button, BorderLayout.SOUTH);
+		boxPanel = new JPanel(new BorderLayout());
+		checkIt = new JPanel(new BorderLayout());
+		boxPanel.add(button, BorderLayout.NORTH);
+		checkIt.add(isAdmin, BorderLayout.EAST);
+		checkIt.add(signUp, BorderLayout.WEST);
+
+
+		boxPanel.add(checkIt, BorderLayout.SOUTH);
+
+		passPanel.add(boxPanel, BorderLayout.SOUTH);
 
 		panel = new JPanel(new BorderLayout());
 		panel.add(userPanel, BorderLayout.NORTH);
@@ -62,6 +81,8 @@ public class Launcher extends JFrame {
 		// The only thing we want to wait for is a click on the button
 		MyHandler handler = new MyHandler();
 		button.addActionListener(handler);
+		isAdmin.addActionListener(handler);
+		signUp.addActionListener(handler);
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(250, 150);
@@ -72,26 +93,44 @@ public class Launcher extends JFrame {
     // inner class
     private class MyHandler implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
+    		int id = 0;
     		if (event.getSource() == button){
+
     			String name = userTextField.getText();
     			String password = passTextField.getText();
 
-    			int id = 0;
-    			try{
-    				id = db.login(name, password);
+    			if (isAdmin.isSelected()){
+    				userTextField.setText("isChecked");
+    				//query database for isAdmin
     			}
-    			catch (Exception e){
-    				e.printStackTrace();
-    			}
-
-    			if(id != 0){
-    				GUI gui = new GUI(db, id);
-    				gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    				gui.setSize(700,800);
-    				gui.setVisible(true);
-    				gui.setResizable(false);
+    			else if (signUp.isSelected()){
+    				//call db signup function with username and password
+    				Signup su = new Signup(name, password, db, id);
+    				// su.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    				// su.setSize(700,800);
+    				// su.setVisible(true);
+    				// su.setResizable(false);
     				frame.dispose();
-     			}
+    			}
+    			else{
+    				//proceed as normal to login user who already has an account
+    				
+    				try{
+    					id = db.login(name, password);
+    				}
+    				catch (Exception e){
+    					e.printStackTrace();
+    				}
+
+    				if(id != 0){
+    					GUI gui = new GUI(db, id);
+    					gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    					gui.setSize(700,800);
+    					gui.setVisible(true);
+    					gui.setResizable(false);
+    					frame.dispose();
+    				}
+    			}
     		}
 	} // actionPerformed
 }
