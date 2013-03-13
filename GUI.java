@@ -17,6 +17,7 @@ public class GUI extends JFrame {
 	private JButton movieInfo;
 	private JButton topMovies;
 	private JButton movieReviews;
+    private JButton clear;
 
 	private JTextField depositField;
 	private JTextField withdrawlField;
@@ -130,6 +131,9 @@ public class GUI extends JFrame {
 	showBalance = new JButton("Show Balance");
 	showBalance.setBounds(420,250,200,40);
 
+    clear = new JButton("Clear");
+    clear.setBounds(565, 300, 100, 30);
+
 	infoArea = new JTextArea();
 	infoArea.setLineWrap(true);
 	infoArea.setEditable(false);
@@ -143,7 +147,7 @@ public class GUI extends JFrame {
 	add(buyStock);add(buyAmt);add(sellStock);add(sellAmt); add(topMovies); add(startDate); add(endDate);
 	add(startDateLabel); add(endDateLabel); add(viewActorProfile); add(actorProfile); add(actorProfileLabel);
 	add(movieInfo); add(movieInfoField); add(movieInfoLabel); add(movieReviews); add(movieReviewsField); add(movieReviewsLabel);
-	add(transactionHistory); add(showBalance); add(scroller);
+	add(transactionHistory); add(showBalance); add(scroller); add(clear);
 
 	// The only thing we want to wait for is a click on the button
 	MyHandler handler = new MyHandler();
@@ -157,6 +161,7 @@ public class GUI extends JFrame {
 		movieReviews.addActionListener(handler);
 		transactionHistory.addActionListener(handler);
 		showBalance.addActionListener(handler);
+        clear.addActionListener(handler);
     } // MyJFrame
 
     // inner class
@@ -307,6 +312,9 @@ public class GUI extends JFrame {
     				e.printStackTrace();
     			}
        		}
+            else if(event.getSource() == clear){
+                infoArea.setText("");
+            }
 	} // actionPerformed
 
     }// innerclass MyHandler

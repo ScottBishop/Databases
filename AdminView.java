@@ -19,6 +19,7 @@ public class AdminView extends JFrame {
 	JButton setDate;
 	JTextField dateTextField;
 	JLabel dateLabel;
+	JButton clear;
 
 	JTextArea textArea;
 	JScrollPane scroller;
@@ -70,17 +71,20 @@ public class AdminView extends JFrame {
 		dateLabel = new JLabel("Enter Date yyyy-mm-dd");
 		dateLabel.setBounds(420, 330, 200, 50);
 
+		clear = new JButton("Clear");
+		clear.setBounds(565, 740, 100, 30);
+
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		scroller = new JScrollPane(textArea);
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scroller.setBounds(20,370,640,395);
+		scroller.setBounds(20,370,640,370);
 
 		add(gmsButton); add(gmsTextField); add(gmsLabel); add(crButton);
 		add(crTextField); add(crLabel); add(addInterest);
 		add(generateDTER); add(listActiveCustomers); add(deleteTransactions); add(setDate);
-		add(dateTextField); add(dateLabel); add(scroller);
+		add(dateTextField); add(dateLabel); add(scroller); add(clear);
 
 		MyHandler handler = new MyHandler();
 		gmsButton.addActionListener(handler);
@@ -119,7 +123,17 @@ public class AdminView extends JFrame {
 
     		}
     		else if (event.getSource() == setDate){
-
+    			String aDate = dateTextField.getText();
+    			try{
+    				db.setDate(aDate);
+    			}
+    			catch(Exception e){
+    				e.printStackTrace();
+    			}
+    			textArea.append("Date is set to " + aDate + "\n");
+    		}
+    		else if(event.getSource() == clear){
+    			textArea.append("");
     		}
     	}
     }

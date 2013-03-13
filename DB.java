@@ -9,7 +9,6 @@ public class DB {
 	Random random;
 
 
-
 	public void start() throws SQLException{
 		try {
 	    	DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
@@ -25,9 +24,23 @@ public class DB {
 	    random = new Random();
 	}
 
-	public String getDate(){
-		//use valueOf function, takes in a string in the format in "yyyy-mm-dd"
-		return "3/11/13";
+	public String getDate() throws SQLException{
+		String query = "select aDate from theDate";
+		ResultSet rs = stmt.executeQuery(query);
+		String rDate = "";
+		while (rs.next()){
+			rDate = rs.getString("aDate");
+		}
+		rs.close();
+		return rDate;
+	}
+
+	public void setDate(String date) throws SQLException{
+		String query = "delete from theDate";
+		ResultSet rs = stmt.executeQuery(query);
+		query = "insert into theDate values ('" + date + "')";
+		rs = stmt.executeQuery(query);
+		rs.close();
 	}
 
     public int login(String username, String password) throws SQLException {
