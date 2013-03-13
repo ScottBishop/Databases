@@ -270,4 +270,105 @@ public class DB {
 		rs.close();
 		return result;
     }
+
+    public String movieInfo(String title) throws SQLException{
+    	String query = "select * from CS174A.movies where M_NAME = '" + title + "'";
+    	ResultSet rs = stmt.executeQuery(query);
+    	int m_id = 0; String m_name = ""; int m_year = 0; double m_ranking = 0;
+    	while (rs.next()){
+			m_id = rs.getInt("M_ID");
+			m_name = rs.getString("M_NAME");
+			m_year = rs.getInt("M_YEAR");
+			m_ranking = rs.getDouble("M_RANKING");
+		}
+
+		rs.close();
+		String result = "Movie ID: " + m_id + " Name: " + m_name + " Year: " + m_year + " Ranking: " + m_ranking + "\n";
+		return result;
+    }
+
+    public String movieReview(String title) throws SQLException {
+    	String query = "select M_ID from CS174A.movies where M_NAME = '" + title + "'";
+    	ResultSet rs = stmt.executeQuery(query);
+    	int m_id = 0; String review = "";
+    	while (rs.next()){
+			m_id = rs.getInt("M_ID");
+		}
+
+		query = "select R_REVIEW from CS174A.reviews where R_ID =  '" + m_id + "'";
+		rs = stmt.executeQuery(query);
+		while (rs.next()){
+			review = rs.getString("R_REVIEW");
+		}
+
+		rs.close();
+		String result = "Review for the Movie: " + title + " is: " + review + "\n";
+		return result;
+    }
+
+    public String topMovies(int start, int end) throws SQLException {
+    	String query = "select M_NAME from CS174A.movies where M_RANKING > 4.9 and M_YEAR > '" + start + "' and M_YEAR < '" + end + "'";
+    	ResultSet rs = stmt.executeQuery(query);
+    	int m_id = 0; String result = "";
+    	while (rs.next()){
+			result = result + rs.getString("M_NAME") + "\n";
+		}
+
+		rs.close();
+		return result;
+    }
+
+    //*********************************************************
+    //Admin Funtions
+
+
+    public void deleteTransactions() throws SQLException {
+    	String query = "delete from Market_Transaction";
+    	ResultSet rs = stmt.executeQuery(query);
+    	query = "delete from Stock_Transaction";
+    	rs = stmt.executeQuery(query);
+    	rs.close();
+    }
+
+    public String customerReport(int id) throws SQLException {
+    	String query = "select account_ID, balance from Market where tax_ID = '" + id + "'";
+    	ResultSet rs = stmt.executeQuery(query);
+    	int accID=0; double shares =0; String actID = ""; int tID=0;
+    	double balance =0;
+    	while (rs.next()){
+			accID = rs.getInt("account_ID");
+			balance = rs.getDouble("balance");
+		}
+		String returnString = "Market account ID is " + accID + " with balance: " + balance + "\n";
+
+		query = "select * from Stock where tax_ID = '" + id + "'";
+		rs = stmt.executeQuery(query);
+
+
+		while (rs.next()){
+			returnString = returnString + "tax_ID: " + rs.getInt("tax_ID") + " shares: " + shares + " actor ID: " + actID + "\n";
+		}
+
+		rs.close();
+		return returnString;
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

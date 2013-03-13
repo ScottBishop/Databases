@@ -68,8 +68,8 @@ public class AdminView extends JFrame {
 		setDate.setBounds(20, 300, 300, 50);
 		dateTextField = new JTextField();
 		dateTextField.setBounds(350, 300, 300, 50);
-		dateLabel = new JLabel("Enter Date yyyy-mm-dd");
-		dateLabel.setBounds(420, 330, 200, 50);
+		dateLabel = new JLabel("Enter Date dd/mm/yy");
+		dateLabel.setBounds(425, 330, 200, 50);
 
 		clear = new JButton("Clear");
 		clear.setBounds(565, 740, 100, 30);
@@ -109,6 +109,15 @@ public class AdminView extends JFrame {
     		else if (event.getSource() == crButton){
     			String strTax_ID = gmsTextField.getText();
     			int tax_ID = Integer.parseInt(strTax_ID);
+    			String result = "";
+    			try{
+    				result = db.customerReport(tax_ID);
+    				textArea.append(result);
+    			}
+    			catch(Exception e){
+    				e.printStackTrace();
+    			}
+
     		}
     		else if (event.getSource() == addInterest){
 
@@ -120,7 +129,14 @@ public class AdminView extends JFrame {
 
     		}
     		else if (event.getSource() == deleteTransactions){
-
+    			try{
+    				db.deleteTransactions();
+    				textArea.append("List of transactions from each of the accounts was deleted \n");
+    			}
+    			catch(Exception e){
+    				e.printStackTrace();
+    			}
+    			
     		}
     		else if (event.getSource() == setDate){
     			String aDate = dateTextField.getText();

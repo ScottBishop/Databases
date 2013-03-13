@@ -258,6 +258,16 @@ public class GUI extends JFrame {
     			String strEndDate = endDate.getText();
     			int intStartDate = Integer.parseInt(strStartDate);
     			int intEndDate = Integer.parseInt(strEndDate);
+
+                String result = "";
+                try{
+                    result = db.topMovies(intStartDate, intEndDate);
+                    infoArea.append(result);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+
     		}
     		//VIEW ACTOR PROFILE
     		else if (event.getSource() == viewActorProfile){
@@ -277,10 +287,27 @@ public class GUI extends JFrame {
     		//MOVIE INFO
     		else if (event.getSource() == movieInfo){
     			String movieTitle = movieInfoField.getText();
+                String result = "";
+                try{
+                    result = db.movieInfo(movieTitle);
+                    infoArea.append(result);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
     		}
     		//MOVIE REVIEWS
     		else if (event.getSource() == movieReviews){
     			String strMovieReviews = movieReviewsField.getText();
+                String result = "";
+                try{
+                    result = db.movieReview(strMovieReviews);
+                    infoArea.append(result);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+
     		}
     		//TRANSACTION HISTORY
     		else if (event.getSource() == transactionHistory){
