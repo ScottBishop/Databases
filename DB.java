@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.Random;
+import java.util.Date;
 
 public class DB {
 
@@ -25,6 +26,7 @@ public class DB {
 	}
 
 	public String getDate(){
+		//use valueOf function, takes in a string in the format in "yyyy-mm-dd"
 		return "3/11/13";
 	}
 

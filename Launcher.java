@@ -110,7 +110,11 @@ public class Launcher extends JFrame {
     				
     				if(id != 0){
     					//call new Admin gui
-    					Admin ad = new Admin(db, id);
+    					AdminView ad = new AdminView(db, id);
+    					ad.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    					ad.setSize(700,800);
+    					ad.setVisible(true);
+    					ad.setResizable(false);
     					frame.dispose();
     				}
 
