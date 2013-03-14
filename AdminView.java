@@ -21,8 +21,18 @@ public class AdminView extends JFrame {
 	JLabel dateLabel;
 	JButton clear;
 
+	JButton updateStockPrice;
+	JTextField updateStockPriceField;
+	JLabel updateStockPriceLabel;
+	JTextField updateStockField;
+	JLabel updateStockLabel;
+
 	JTextArea textArea;
 	JScrollPane scroller;
+
+	JButton openMarket;
+	JButton closeMarket;
+	JButton reset;
 
 
 	public AdminView(DB mydb, int myid){
@@ -68,23 +78,49 @@ public class AdminView extends JFrame {
 		setDate.setBounds(20, 300, 300, 50);
 		dateTextField = new JTextField();
 		dateTextField.setBounds(350, 300, 300, 50);
-		dateLabel = new JLabel("Enter Date dd/mm/yy");
+		dateLabel = new JLabel("Enter Date mm-dd-yy");
 		dateLabel.setBounds(425, 330, 200, 50);
 
 		clear = new JButton("Clear");
-		clear.setBounds(565, 740, 100, 30);
+		clear.setBounds(1270, 740, 100, 30);
+
+		updateStockPrice = new JButton("Update Stock Price");
+		updateStockPrice.setBounds(20, 370, 300, 50);
+		updateStockPriceField = new JTextField();
+		updateStockPriceField.setBounds(350, 370, 150, 50);
+		
+		updateStockField = new JTextField();
+		updateStockField.setBounds(350, 370, 150, 50);
+		updateStockPriceField = new JTextField();
+		updateStockPriceField.setBounds(510, 370, 150, 50);
+		updateStockLabel = new JLabel("Stock");
+		updateStockLabel.setBounds(400, 400, 200, 50);
+		updateStockPriceLabel = new JLabel("New Price");
+		updateStockPriceLabel.setBounds(550, 400, 200, 50);
+
+		openMarket = new JButton("Open Market");
+		openMarket.setBounds(20, 440, 300, 50);
+
+		closeMarket = new JButton("Close Market");
+		closeMarket.setBounds(350, 440, 300, 50);
+
+		reset = new JButton("Reset");
+		reset.setBounds(20, 510, 300, 50);
+
 
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		scroller = new JScrollPane(textArea);
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scroller.setBounds(20,370,640,370);
+		scroller.setBounds(700,20,640,700);
 
 		add(gmsButton); add(gmsTextField); add(gmsLabel); add(crButton);
 		add(crTextField); add(crLabel); add(addInterest);
 		add(generateDTER); add(listActiveCustomers); add(deleteTransactions); add(setDate);
-		add(dateTextField); add(dateLabel); add(scroller); add(clear);
+		add(dateTextField); add(dateLabel); add(scroller); add(updateStockPrice); 
+		add(updateStockPriceLabel);add(updateStockPriceField); add(updateStockField); add(updateStockLabel);
+		add(clear); add(openMarket); add(closeMarket); add(reset);
 
 		MyHandler handler = new MyHandler();
 		gmsButton.addActionListener(handler);
@@ -94,64 +130,123 @@ public class AdminView extends JFrame {
 		listActiveCustomers.addActionListener(handler);
 		deleteTransactions.addActionListener(handler);
 		setDate.addActionListener(handler);
+		updateStockPrice.addActionListener(handler);
+		openMarket.addActionListener(handler);
+		closeMarket.addActionListener(handler);
+		reset.addActionListener(handler);
 
 
 	}
 
-	 private class MyHandler implements ActionListener {
-    	public void actionPerformed(ActionEvent event) {
+	private class MyHandler implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
     		//DEPOSIT
-    		if (event.getSource() == gmsButton){
-    			String strTax_ID = gmsTextField.getText();
-    			int tax_ID = Integer.parseInt(strTax_ID);
-    			//textArea.append("Clicked\n");
-    		}
-    		else if (event.getSource() == crButton){
-    			String strTax_ID = gmsTextField.getText();
-    			int tax_ID = Integer.parseInt(strTax_ID);
-    			String result = "";
-    			try{
-    				result = db.customerReport(tax_ID);
-    				textArea.append(result);
-    			}
-    			catch(Exception e){
-    				e.printStackTrace();
-    			}
+			if (event.getSource() == gmsButton){
+				String strTax_ID = gmsTextField.getText();
+				if (strTax_ID.isEmpty()){
+					textArea.append("Please enter a Tax ID \n");
+				}
+				else{
+					int tax_ID = Integer.parseInt(strTax_ID);
+					String result = "";
+					try{
+						result = db.monthlyStatement(tax_ID);
+						textArea.append(result);
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			}
+			else if (event.getSource() == crButton){
+				String strTax_ID = crTextField.getText();
+				if (strTax_ID.isEmpty()){
+					textArea.append("Please enter a Tax ID \n");
+				}
+				else{
+					int tax_ID = Integer.parseInt(strTax_ID);
+					String result = "";
+					try{
+						result = db.customerReport(tax_ID);
+						textArea.append(result);
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
 
-    		}
-    		else if (event.getSource() == addInterest){
+			}
+			else if (event.getSource() == addInterest){
 
-    		}
-    		else if (event.getSource() == generateDTER){
+			}
+			else if (event.getSource() == generateDTER){
+				try{
+					textArea.append(db.generateDTER());
+				}
+				catch(Exception e){
+						e.printStackTrace();
+				}
+			}
+			else if (event.getSource() == listActiveCustomers){
+				try{
+					textArea.append(db.activeCustomers());
+				}
+				catch(Exception e){
+						e.printStackTrace();
+				}
+			}
+			else if (event.getSource() == deleteTransactions){
+				try{
+					db.deleteTransactions();
+					textArea.append("List of transactions from each of the accounts was deleted \n");
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
 
-    		}
-    		else if (event.getSource() == listActiveCustomers){
-
-    		}
-    		else if (event.getSource() == deleteTransactions){
-    			try{
-    				db.deleteTransactions();
-    				textArea.append("List of transactions from each of the accounts was deleted \n");
-    			}
-    			catch(Exception e){
-    				e.printStackTrace();
-    			}
-    			
-    		}
-    		else if (event.getSource() == setDate){
-    			String aDate = dateTextField.getText();
-    			try{
-    				db.setDate(aDate);
-    			}
-    			catch(Exception e){
-    				e.printStackTrace();
-    			}
-    			textArea.append("Date is set to " + aDate + "\n");
-    		}
-    		else if(event.getSource() == clear){
-    			textArea.append("");
-    		}
-    	}
-    }
+			}
+			else if (event.getSource() == setDate){
+				String aDate = dateTextField.getText();
+				try{
+					db.setDate(aDate);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+				textArea.append("Date is set to " + aDate + "\n");
+			}
+			else if(event.getSource() == clear){
+				textArea.append("");
+			}
+			else if (event.getSource() == updateStockPrice){
+				String stockID = updateStockField.getText();
+				String stockPrice = updateStockPriceField.getText();
+				int intStockPrice = Integer.parseInt(stockPrice);
+				try{
+					db.changeStockPrice((double)intStockPrice, stockID);
+					textArea.append("Price of " + stockID + " is now " + intStockPrice);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == openMarket){
+				textArea.append("Market is now open \n");
+			}
+			else if(event.getSource() == closeMarket){
+				textArea.append("Market is now closed \n");
+			}
+			else if(event.getSource() == reset){
+				try{
+					db.insertData();
+					textArea.append("Tables are restored to original state \n");
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+				
+			}
+		}
+	}
 
 }

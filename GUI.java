@@ -25,6 +25,8 @@ public class GUI extends JFrame {
 	private JTextField buyField2;
 	private JTextField sellField1;
 	private JTextField sellField2;
+    private JTextField origPrice;
+    private JLabel origPriceLabel;
 	private JTextField startDate;
 	private JTextField endDate;
 	private JTextField actorProfile;
@@ -83,14 +85,18 @@ public class GUI extends JFrame {
 
 	sell = new JButton("Sell");
 	sell.setBounds(350,70,150,40);
-	sellField1 = new JTextField("",10); // 10 wide, and initially empty
-	sellField1.setBounds(510,70,75,30);
-	sellStock = new JLabel("Stock ID",JLabel.LEFT);
+	sellField1 = new JTextField("",5); // 10 wide, and initially empty
+	sellField1.setBounds(510,70,50,30);
+	sellStock = new JLabel("Stock",JLabel.LEFT);
 	sellStock.setBounds(515,100,150,20);
-	sellField2 = new JTextField("",10); // 10 wide, and initially empty
-	sellField2.setBounds(590,70,75,30);
+	sellField2 = new JTextField("",5); // 10 wide, and initially empty
+	sellField2.setBounds(560,70,50,30);
 	sellAmt = new JLabel("Amount",JLabel.LEFT);
-	sellAmt.setBounds(600,100,150,20);
+	sellAmt.setBounds(560,100,150,20);
+    origPrice = new JTextField();
+    origPrice.setBounds(610, 70, 50, 30);
+    origPriceLabel = new JLabel("Price");
+    origPriceLabel.setBounds(620, 100, 150, 20);
 
 	topMovies = new JButton("Top Movies");
 	topMovies.setBounds(20,130,150,40);
@@ -147,7 +153,7 @@ public class GUI extends JFrame {
 	add(buyStock);add(buyAmt);add(sellStock);add(sellAmt); add(topMovies); add(startDate); add(endDate);
 	add(startDateLabel); add(endDateLabel); add(viewActorProfile); add(actorProfile); add(actorProfileLabel);
 	add(movieInfo); add(movieInfoField); add(movieInfoLabel); add(movieReviews); add(movieReviewsField); add(movieReviewsLabel);
-	add(transactionHistory); add(showBalance); add(scroller); add(clear);
+	add(transactionHistory); add(showBalance); add(scroller); add(origPrice); add(origPriceLabel); add(clear);
 
 	// The only thing we want to wait for is a click on the button
 	MyHandler handler = new MyHandler();
@@ -229,6 +235,8 @@ public class GUI extends JFrame {
     		else if (event.getSource() == sell){
     			String strStockID = sellField1.getText();
     			String strAmount = sellField2.getText();
+                String strOrigPrice = origPrice.getText();
+                double doubleOrigPrice = Double.parseDouble(strOrigPrice);
     			int amount = Integer.parseInt(strAmount);
     			double price = 0; double shares = 0;
     			try{
@@ -237,7 +245,7 @@ public class GUI extends JFrame {
     					shares = db.getNumShares(strStockID, id);
     					if(shares >= amount){
     						db.deposit(((price * amount) - 20),id);
-    						db.sellStock(strStockID, amount, id, price);
+    						db.sellStock(strStockID, amount, id, price, doubleOrigPrice);
     						infoArea.append(amount + " shares of " + strStockID + " were sold.\n");	
     					}
     					else{
