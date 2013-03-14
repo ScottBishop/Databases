@@ -17,8 +17,6 @@ public class GUI extends JFrame {
 	private JButton movieInfo;
 	private JButton topMovies;
 	private JButton movieReviews;
-    private JButton clear;
-    private JButton logout;
 
 	private JTextField depositField;
 	private JTextField withdrawlField;
@@ -26,8 +24,6 @@ public class GUI extends JFrame {
 	private JTextField buyField2;
 	private JTextField sellField1;
 	private JTextField sellField2;
-    private JTextField origPrice;
-    private JLabel origPriceLabel;
 	private JTextField startDate;
 	private JTextField endDate;
 	private JTextField actorProfile;
@@ -86,18 +82,14 @@ public class GUI extends JFrame {
 
 	sell = new JButton("Sell");
 	sell.setBounds(350,70,150,40);
-	sellField1 = new JTextField("",5); // 10 wide, and initially empty
-	sellField1.setBounds(510,70,50,30);
-	sellStock = new JLabel("Stock",JLabel.LEFT);
+	sellField1 = new JTextField("",10); // 10 wide, and initially empty
+	sellField1.setBounds(510,70,75,30);
+	sellStock = new JLabel("Stock ID",JLabel.LEFT);
 	sellStock.setBounds(515,100,150,20);
-	sellField2 = new JTextField("",5); // 10 wide, and initially empty
-	sellField2.setBounds(560,70,50,30);
+	sellField2 = new JTextField("",10); // 10 wide, and initially empty
+	sellField2.setBounds(590,70,75,30);
 	sellAmt = new JLabel("Amount",JLabel.LEFT);
-	sellAmt.setBounds(560,100,150,20);
-    origPrice = new JTextField();
-    origPrice.setBounds(610, 70, 50, 30);
-    origPriceLabel = new JLabel("Price");
-    origPriceLabel.setBounds(620, 100, 150, 20);
+	sellAmt.setBounds(600,100,150,20);
 
 	topMovies = new JButton("Top Movies");
 	topMovies.setBounds(20,130,150,40);
@@ -138,12 +130,6 @@ public class GUI extends JFrame {
 	showBalance = new JButton("Show Balance");
 	showBalance.setBounds(420,250,200,40);
 
-    clear = new JButton("Clear");
-    clear.setBounds(565, 300, 100, 30);
-
-    logout = new JButton("Logout");
-    logout.setBounds(20, 300, 100, 30);
-
 	infoArea = new JTextArea();
 	infoArea.setLineWrap(true);
 	infoArea.setEditable(false);
@@ -157,7 +143,7 @@ public class GUI extends JFrame {
 	add(buyStock);add(buyAmt);add(sellStock);add(sellAmt); add(topMovies); add(startDate); add(endDate);
 	add(startDateLabel); add(endDateLabel); add(viewActorProfile); add(actorProfile); add(actorProfileLabel);
 	add(movieInfo); add(movieInfoField); add(movieInfoLabel); add(movieReviews); add(movieReviewsField); add(movieReviewsLabel);
-	add(transactionHistory); add(showBalance); add(scroller); add(origPrice); add(origPriceLabel); add(clear); add(logout);
+	add(transactionHistory); add(showBalance); add(scroller);
 
 	// The only thing we want to wait for is a click on the button
 	MyHandler handler = new MyHandler();
@@ -171,8 +157,6 @@ public class GUI extends JFrame {
 		movieReviews.addActionListener(handler);
 		transactionHistory.addActionListener(handler);
 		showBalance.addActionListener(handler);
-        clear.addActionListener(handler);
-        logout.addActionListener(handler);
     } // MyJFrame
 
     // inner class
@@ -180,30 +164,40 @@ public class GUI extends JFrame {
     	public void actionPerformed(ActionEvent event) {
     		//DEPOSIT
     		if (event.getSource() == deposit){
-    			String strAmount = depositField.getText();
-    			int amount = Integer.parseInt(strAmount);
-    			try{
-    				db.deposit(amount,id);
-    			}
-    			catch (Exception e){
-    				e.printStackTrace();
-    			}
-    			infoArea.append(strAmount + " was desposited into your Market Account.\n");
+                try{
+                    if(db.checkMarketOpen()){
+                        String strAmount = depositField.getText();
+                        int amount = Integer.parseInt(strAmount);                  
+                        db.deposit(amount,id);  
+                        infoArea.append(strAmount + " was desposited into your Market Account.\n");
+                    }
+                    else{
+                        infoArea.append("The Market is closed.\n");
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
     		}
     		//WITHDRAW
     		else if (event.getSource() == withdrawl){
-    			String strAmount = withdrawlField.getText();
-    			int amount = Integer.parseInt(strAmount);
-    			double balance = 0;
-    			try{
-    				balance = db.getMarketBalance(id);
-    				if(balance >= amount){
-    					db.withdraw(amount,id);
-    					infoArea.append(strAmount + " was withdrawn from your Market Account.\n");
-    				}
-    				else{
-    					infoArea.append("You do not have enough money in your Market Account to withdraw " + strAmount + ".\n");
-    				}
+                try{
+                    if(db.checkMarketOpen()){
+            			String strAmount = withdrawlField.getText();
+            			int amount = Integer.parseInt(strAmount);
+            			double balance = 0;
+            			balance = db.getMarketBalance(id);
+            			if(balance >= amount){
+        					db.withdraw(amount,id);
+        					infoArea.append(strAmount + " was withdrawn from your Market Account.\n");
+        				}
+        				else{
+        					infoArea.append("You do not have enough money in your Market Account to withdraw " + strAmount + ".\n");
+        				}
+                    }
+                    else{
+                        infoArea.append("The Market is closed.\n");
+                    }
     			}
     			catch (Exception e){
     				e.printStackTrace();
@@ -211,26 +205,31 @@ public class GUI extends JFrame {
     		}
     		//BUY
     		else if (event.getSource() == buy){
-    			String strStockID = buyField1.getText();
-    			String strAmount = buyField2.getText();
-    			int amount = Integer.parseInt(strAmount);
-    			double price = 0; double balance = 0;
-    			try{
-    				if(db.checkStockExists(strStockID)){
-    					price = db.getCurrentStockPrice(strStockID);
-    					balance = db.getMarketBalance(id);
-    					if(balance >= ((price * amount) + 20)){
-    						db.withdraw(((price * amount) + 20),id);
-    						db.addStock(strStockID, amount, id, price);
-    						infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");	
-    					}
-    					else{
-    						infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + "\n");
-    					}
-    				}
-    				else{
-    					infoArea.append(strStockID + " is not a valid stock ID.\n");
-    				}
+                try{
+                    if(db.checkMarketOpen()){
+            			String strStockID = buyField1.getText();
+            			String strAmount = buyField2.getText();
+            			int amount = Integer.parseInt(strAmount);
+            			double price = 0; double balance = 0;
+        				if(db.checkStockExists()){
+        					price = db.getCurrentStockPrice(strStockID);
+        					balance = db.getMarketBalance(id);
+        					if(balance >= ((price * amount) + 20)){
+        						db.withdraw(((price * amount) + 20),id);
+        						db.addStock(strStockID, amount, id);
+        						infoArea.append(amount + " shares of " + strStockID + " were purchased.\n");	
+        					}
+        					else{
+        						infoArea.append("You do not have enough money in your Market Account to buy " + amount + " shares of " + strStockID + "\n");
+        					}
+        				}
+        				else{
+        					infoArea.append(strStockID + " is not a valid stock ID.\n");
+        				}
+                    }
+                    else{
+                        infoArea.append("The Market is closed.\n");
+                    }
     			}
     			catch (Exception e){
     				e.printStackTrace();
@@ -238,28 +237,31 @@ public class GUI extends JFrame {
     		}
     		//SELL
     		else if (event.getSource() == sell){
-    			String strStockID = sellField1.getText();
-    			String strAmount = sellField2.getText();
-                String strOrigPrice = origPrice.getText();
-                double doubleOrigPrice = Double.parseDouble(strOrigPrice);
-    			int amount = Integer.parseInt(strAmount);
-    			double price = 0; double shares = 0;
-    			try{
-    				if(db.checkStockExists(strStockID)){
-    					price = db.getCurrentStockPrice(strStockID);
-    					shares = db.getNumShares(strStockID, id);
-    					if(shares >= amount){
-    						db.deposit(((price * amount) - 20),id);
-    						db.sellStock(strStockID, amount, id, price, doubleOrigPrice);
-    						infoArea.append(amount + " shares of " + strStockID + " were sold.\n");	
-    					}
-    					else{
-    						infoArea.append("You do not have enough shares in your stock account to sell " + amount + " shares of " + strStockID + "\n");
-    					}
-    				}
-    				else{
-    					infoArea.append(strStockID + " is not a valid stock ID.\n");
-    				}
+                try{
+                    if(db.checkMarketOpen()){
+            			String strStockID = sellField1.getText();
+            			String strAmount = sellField2.getText();
+            			int amount = Integer.parseInt(strAmount);
+            			double price = 0; double shares = 0;
+        				if(db.checkStockExists()){
+        					price = db.getCurrentStockPrice(strStockID);
+        					shares = db.getNumShares(strStockID, id);
+        					if(shares >= amount){
+        						db.deposit(((price * amount) - 20),id);
+        						db.sellStock(strStockID, amount, id);
+        						infoArea.append(amount + " shares of " + strStockID + " were sold.\n");	
+        					}
+        					else{
+        						infoArea.append("You do not have enough shares in your stock account to sell " + amount + " shares of " + strStockID + "\n");
+        					}
+        				}
+        				else{
+        					infoArea.append(strStockID + " is not a valid stock ID.\n");
+        				}
+                    }
+                    else{
+                        infoArea.append("The Market is closed.\n");
+                    }
     			}
     			catch (Exception e){
     				e.printStackTrace();
@@ -271,22 +273,12 @@ public class GUI extends JFrame {
     			String strEndDate = endDate.getText();
     			int intStartDate = Integer.parseInt(strStartDate);
     			int intEndDate = Integer.parseInt(strEndDate);
-
-                String result = "";
-                try{
-                    result = db.topMovies(intStartDate, intEndDate);
-                    infoArea.append(result);
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
-
     		}
     		//VIEW ACTOR PROFILE
     		else if (event.getSource() == viewActorProfile){
     			String strStockID = actorProfile.getText();
     			try{
-					if(db.checkStockExists(strStockID)){
+					if(db.checkStockExists()){
 						infoArea.append("" + db.getActorProfile(strStockID));
 					}
 					else{
@@ -300,40 +292,18 @@ public class GUI extends JFrame {
     		//MOVIE INFO
     		else if (event.getSource() == movieInfo){
     			String movieTitle = movieInfoField.getText();
-                String result = "";
-                try{
-                    result = db.movieInfo(movieTitle);
-                    infoArea.append(result);
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
     		}
     		//MOVIE REVIEWS
     		else if (event.getSource() == movieReviews){
     			String strMovieReviews = movieReviewsField.getText();
-                String result = "";
-                try{
-                    result = db.movieReview(strMovieReviews);
-                    infoArea.append(result);
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
-
     		}
     		//TRANSACTION HISTORY
     		else if (event.getSource() == transactionHistory){
-    			try{
-    				if(db.checkTransactionHistory(id)){
-    					infoArea.append(db.getTransactionHistory(id) + "");
-    				}
-    				else{
-    					infoArea.append("You have not made any transactions.\n");
-    				}
+    			if(db.checkTransactionHistory(id)){
+    				infoArea.append(db.getTransactionHistory(id) + "");
     			}
-    			catch (Exception e){
-    				e.printStackTrace();
+    			else{
+    				infoArea.append("You have not made any transactions.\n");
     			}
     		}
     		//SHOW BALANCE
@@ -352,13 +322,6 @@ public class GUI extends JFrame {
     				e.printStackTrace();
     			}
        		}
-            else if(event.getSource() == clear){
-                infoArea.setText("");
-            }
-            else if(event.getSource() == logout){
-                Launcher mjf = new Launcher();
-                dispose();
-            }
 	} // actionPerformed
 
     }// innerclass MyHandler
