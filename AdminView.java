@@ -36,6 +36,8 @@ public class AdminView extends JFrame {
 	JButton closeMarket;
 	JButton reset;
 
+
+
 	public AdminView(DB mydb, int myid){
 		super("Admin");
 		setLayout(null);
@@ -89,7 +91,7 @@ public class AdminView extends JFrame {
 		updateStockPrice.setBounds(20, 370, 300, 50);
 		updateStockPriceField = new JTextField();
 		updateStockPriceField.setBounds(350, 370, 150, 50);
-
+		
 		updateStockField = new JTextField();
 		updateStockField.setBounds(350, 370, 150, 50);
 		updateStockPriceField = new JTextField();
@@ -267,7 +269,7 @@ public class AdminView extends JFrame {
 				catch(Exception e){
 					e.printStackTrace();
 				}
-
+				
 			}
 			else if(event.getSource() == logout){
 				Launcher mjf = new Launcher();

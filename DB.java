@@ -432,7 +432,7 @@ public String customerReport(int id) throws SQLException {
 
 public String monthlyStatement(int id) throws SQLException {
 	int month = getDate().get(Calendar.MONTH); int year = getDate().get(Calendar.YEAR);
-
+	
 	String name = ""; String email = ""; String result = "";
 	String query = "select name, email from Customer where tax_ID = '" + id + "'";
 	ResultSet rs = stmt.executeQuery(query);
@@ -601,3 +601,5 @@ public void addInterest() throws SQLException{
 		xs.close();
 	}
 	rs.close();
+}
+}
