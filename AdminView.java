@@ -140,6 +140,7 @@ public class AdminView extends JFrame {
 		updateStockPrice.addActionListener(handler);
 		openMarket.addActionListener(handler);
 		closeMarket.addActionListener(handler);
+		clear.addActionListener(handler);
 		reset.addActionListener(handler);
 		logout.addActionListener(handler);
 
@@ -229,7 +230,7 @@ public class AdminView extends JFrame {
 				textArea.append("Date is set to " + aDate + "\n");
 			}
 			else if(event.getSource() == clear){
-				textArea.append("");
+				textArea.setText("");
 			}
 			else if (event.getSource() == updateStockPrice){
 				String stockID = updateStockField.getText();

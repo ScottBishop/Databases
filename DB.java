@@ -72,6 +72,8 @@ public class DB {
 
 	public void updateDailyBalance(Calendar calNew) throws SQLException {
 		Calendar calOld = getDate(); double balance = 0; int taxID = 0; int maxDay = 0; ArrayList<Integer> ids = new ArrayList<Integer>();
+		//System.out.println(calOld.get(Calendar.DAY_OF_MONTH));
+		//System.out.println(calNew.get(Calendar.DAY_OF_MONTH));
 		if(calOld.get(Calendar.DAY_OF_MONTH) != calNew.get(Calendar.DAY_OF_MONTH)){
 			String query = "select unique tax_ID from dailyBalance";
 			ResultSet rs = stmt.executeQuery (query);
@@ -175,7 +177,7 @@ public double getCurrentStockPrice(String actorID) throws SQLException {
 	return price;
 }
 
-public void deposit(double amount, int id) throws SQLException {
+public void deposit(double amount, int id, Boolean stock) throws SQLException {
 	double startingAmount = amount;
 	String query = "select Balance from Market where tax_ID = '" + id + "'";
 	ResultSet rs = stmt.executeQuery(query);
@@ -184,14 +186,16 @@ public void deposit(double amount, int id) throws SQLException {
 	}
 	query = "update Market set Balance = " + amount + " where tax_ID = '" + id + "'";
 	rs = stmt.executeQuery(query);
-	query = "insert into Market_Transaction values(" + id + "," + getDate().get(Calendar.MONTH) + "," 
-		+ getDate().get(Calendar.DAY_OF_MONTH) + "," + getDate().get(Calendar.YEAR) + ","
-		+ amount + ",'" + startingAmount + " was deposited on " + dateString(getDate()) + "')";
-rs = stmt.executeQuery(query);
-rs.close();
+	if(!stock){
+		query = "insert into Market_Transaction values(" + id + "," + getDate().get(Calendar.MONTH) + "," 
+			+ getDate().get(Calendar.DAY_OF_MONTH) + "," + getDate().get(Calendar.YEAR) + ","
+			+ amount + ",'" + startingAmount + " was deposited on " + dateString(getDate()) + "')";
+		rs = stmt.executeQuery(query);
+	}
+	rs.close();
 } 
 
-public void withdraw(double amount, int id) throws SQLException {
+public void withdraw(double amount, int id, Boolean stock) throws SQLException {
 	String query = "select Balance from Market where tax_ID = '" + id + "'";
 	ResultSet rs = stmt.executeQuery(query);
 	int balance=0;
@@ -200,19 +204,21 @@ public void withdraw(double amount, int id) throws SQLException {
 	}
 	query = "update Market set Balance = " + (balance - amount) + " where tax_ID = '" + id + "'";
 	rs = stmt.executeQuery(query);
-	query = "insert into Market_Transaction values(" + id + "," + getDate().get(Calendar.MONTH) + "," 
-		+ getDate().get(Calendar.DAY_OF_MONTH) + "," + getDate().get(Calendar.YEAR) + "," + (amount * -1)
-		+ ",'" + amount + " was withdrawn on " + dateString(getDate()) + "')";
-rs = stmt.executeQuery(query);
-rs.close();
+	if(!stock){
+		query = "insert into Market_Transaction values(" + id + "," + getDate().get(Calendar.MONTH) + "," 
+			+ getDate().get(Calendar.DAY_OF_MONTH) + "," + getDate().get(Calendar.YEAR) + "," + (amount * -1)
+			+ ",'" + amount + " was withdrawn on " + dateString(getDate()) + "')";
+		rs = stmt.executeQuery(query);
+	}
+	rs.close();
 }
 
-public void addStock(String stockID, int amount, int id, double price) throws SQLException {
+public void addStock(String stockID, double amount, int id, double price) throws SQLException {
 	String query = "select Shares from Stock where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
 	ResultSet rs = stmt.executeQuery(query);
-	int currentAmount = 0;
+	double currentAmount = 0;
 	while (rs.next()){
-		currentAmount = rs.getInt("Shares");
+		currentAmount = rs.getDouble("Shares");
 	}
 	if(currentAmount != 0){
 		query = "update Stock set Shares = " + (currentAmount + amount) + " where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
@@ -229,12 +235,12 @@ rs = stmt.executeQuery(query);
 rs.close();
 }
 
-public void sellStock(String stockID, int amount, int id, double price, double origPrice) throws SQLException {
+public void sellStock(String stockID, double amount, int id, double price, double origPrice) throws SQLException {
 	String query = "select Shares from Stock where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
 	ResultSet rs = stmt.executeQuery(query);
-	int currentAmount = 0;
+	double currentAmount = 0;
 	while (rs.next()){
-		currentAmount = rs.getInt("Shares");
+		currentAmount = rs.getDouble("Shares");
 	}
 	if(currentAmount != 0){
 		query = "update Stock set Shares = " + (currentAmount - amount) + " where tax_ID = '" + id + "' and actor_id = '" + stockID + "'";
@@ -490,24 +496,28 @@ public String generateDTER() throws SQLException{
 }
 
 public String activeCustomers() throws SQLException{
+	ArrayList<Integer> ids = new ArrayList<Integer>();
 	String query = "select unique tax_ID from Stock_Transaction";
 	 ResultSet rs = stmt.executeQuery(query);
 	 double numShares = 0; int taxID = 0;
 	 String result = "";
 	 while (rs.next()){
-	 	taxID = rs.getInt("tax_ID");
-		query = "select sum(num_shares) from stock_transaction where tax_ID = '" + taxID + "'";
+		ids.add(rs.getInt("tax_ID"));
+	}
+	for(int x = 0; x < ids.size(); x++){
+		query = "select sum(num_shares) from stock_transaction where tax_ID = '" + ids.get(x) + "'";
 		ResultSet xs = stmt.executeQuery(query);
 		while (xs.next()){
 			numShares = xs.getDouble(1);
 			if(numShares >= 1000){
-				query = "select name from Customer where tax_ID = '" + taxID + "'";
+				query = "select name from Customer where tax_ID = '" + ids.get(x) + "'";
 				ResultSet ys = stmt.executeQuery(query);
 				while (ys.next()){
 					result = result + ys.getString("name") + "\n";
 				}
 				ys.close();
 			}
+			
 		}
 		xs.close();
 	}
