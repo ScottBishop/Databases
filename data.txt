@@ -1,3 +1,4 @@
+delete from marketOpen
 delete from dailyBalance
 delete from theDate
 delete from Stock_Transaction
@@ -56,6 +57,7 @@ insert into Market values(1123, 10, 35000, 0, 35000)
 insert into Market values(3306, 11, 30500, 0, 30500)
 insert into Market values(1111, 13, 10000, 0, 10000)
 insert into theDate values(3,16,13)
+insert into marketOpen values ('y')
 insert into dailyBalance values(1022,3,1,13,10000,15)
 insert into dailyBalance values(1022,3,16,13,10000,16)
 insert into dailyBalance values(3045,3,1,13,100000,15)

@@ -262,6 +262,24 @@ public void sellStock(String stockID, double amount, int id, double price, doubl
 	query = "update Market set earnings = " + earnings + " where tax_ID = '" + id + "'";
 	rs = stmt.executeQuery(query);
 	rs.close();
+	CleanupStocks();
+}
+
+public void CleanupStocks() throws SQLException {
+	String query = "select Shares, tax_ID, actor_id from Stock";
+	ResultSet rs = stmt.executeQuery(query);
+	double currentAmount = 0; int tax_ID = 0; String actor_id = "";
+	while (rs.next()){
+		currentAmount = rs.getDouble("Shares");
+		tax_ID = rs.getInt("tax_ID");
+		actor_id = rs.getString("actor_id");
+		if(currentAmount == 0){
+			query = "delete from Stock where tax_ID = '" + tax_ID + "' and actor_id = '" + actor_id + "'";
+			ResultSet xs = stmt.executeQuery(query);
+			xs.close();
+		}
+	}
+	rs.close();
 }
 
 public Boolean checkStockExists(String stockID) throws SQLException {
@@ -478,19 +496,27 @@ public String monthlyStatement(int id) throws SQLException {
 }
 
 public String generateDTER() throws SQLException{
-	String query = "select tax_ID, earnings from Market where earnings > 10000";
+	ArrayList<Integer> ids = new ArrayList<Integer>();
+	ArrayList<Double> earn = new ArrayList<Double>();
+	String query = "select tax_ID, earnings from Market where earnings > 9999";
 	 ResultSet rs = stmt.executeQuery(query);
 	 double earnings = 0;
 	 String result = "";
 	 while (rs.next()){
-		query = "select name, state from Customer where tax_ID = '" + rs.getInt("tax_ID") + "'";
-		earnings = rs.getDouble("earnings");
+	 	ids.add(rs.getInt("tax_ID"));
+	 	earn.add(rs.getDouble("earnings"));
+	 }
+
+	for(int x = 0; x < ids.size(); x++){	 
+		query = "select name, state from Customer where tax_ID = '" + ids.get(x) + "'";
+		earnings = earn.get(x);
 		ResultSet xs = stmt.executeQuery(query);
 		while (xs.next()){
 			result = result + xs.getString("name") + " " + xs.getString("state") + " " + earnings + "\n";
 		}
 		xs.close();
 	}
+	
 	rs.close();	
 	return result;
 }
