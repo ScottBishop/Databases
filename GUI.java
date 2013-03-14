@@ -18,6 +18,7 @@ public class GUI extends JFrame {
 	private JButton topMovies;
 	private JButton movieReviews;
     private JButton clear;
+    private JButton logout;
 
 	private JTextField depositField;
 	private JTextField withdrawlField;
@@ -140,6 +141,9 @@ public class GUI extends JFrame {
     clear = new JButton("Clear");
     clear.setBounds(565, 300, 100, 30);
 
+    logout = new JButton("Logout");
+    logout.setBounds(20, 300, 100, 30);
+
 	infoArea = new JTextArea();
 	infoArea.setLineWrap(true);
 	infoArea.setEditable(false);
@@ -153,7 +157,7 @@ public class GUI extends JFrame {
 	add(buyStock);add(buyAmt);add(sellStock);add(sellAmt); add(topMovies); add(startDate); add(endDate);
 	add(startDateLabel); add(endDateLabel); add(viewActorProfile); add(actorProfile); add(actorProfileLabel);
 	add(movieInfo); add(movieInfoField); add(movieInfoLabel); add(movieReviews); add(movieReviewsField); add(movieReviewsLabel);
-	add(transactionHistory); add(showBalance); add(scroller); add(origPrice); add(origPriceLabel); add(clear);
+	add(transactionHistory); add(showBalance); add(scroller); add(origPrice); add(origPriceLabel); add(clear); add(logout);
 
 	// The only thing we want to wait for is a click on the button
 	MyHandler handler = new MyHandler();
@@ -168,6 +172,7 @@ public class GUI extends JFrame {
 		transactionHistory.addActionListener(handler);
 		showBalance.addActionListener(handler);
         clear.addActionListener(handler);
+        logout.addActionListener(handler);
     } // MyJFrame
 
     // inner class
@@ -349,6 +354,10 @@ public class GUI extends JFrame {
        		}
             else if(event.getSource() == clear){
                 infoArea.setText("");
+            }
+            else if(event.getSource() == logout){
+                Launcher mjf = new Launcher();
+                dispose();
             }
 	} // actionPerformed
 

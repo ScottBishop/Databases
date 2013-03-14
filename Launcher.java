@@ -123,7 +123,6 @@ public class Launcher extends JFrame {
     			else if (signUp.isSelected()){
     				//call db signup function with username and password
     				Signup su = new Signup(name, password, db, id);
-    				
     				frame.dispose();
     			}
     			else{

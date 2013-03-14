@@ -6,6 +6,7 @@ import javax.swing.plaf.FontUIResource;
 public class AdminView extends JFrame {
 	DB db;
 	int id;
+
 	JButton gmsButton;
 	JTextField gmsTextField;
 	JLabel gmsLabel;
@@ -20,6 +21,7 @@ public class AdminView extends JFrame {
 	JTextField dateTextField;
 	JLabel dateLabel;
 	JButton clear;
+	JButton logout;
 
 	JButton updateStockPrice;
 	JTextField updateStockPriceField;
@@ -33,6 +35,7 @@ public class AdminView extends JFrame {
 	JButton openMarket;
 	JButton closeMarket;
 	JButton reset;
+
 
 
 	public AdminView(DB mydb, int myid){
@@ -107,6 +110,10 @@ public class AdminView extends JFrame {
 		reset = new JButton("Reset");
 		reset.setBounds(20, 510, 300, 50);
 
+		logout = new JButton("Logout");
+    	logout.setBounds(350, 510, 300, 50);
+
+
 
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
@@ -120,7 +127,7 @@ public class AdminView extends JFrame {
 		add(generateDTER); add(listActiveCustomers); add(deleteTransactions); add(setDate);
 		add(dateTextField); add(dateLabel); add(scroller); add(updateStockPrice); 
 		add(updateStockPriceLabel);add(updateStockPriceField); add(updateStockField); add(updateStockLabel);
-		add(clear); add(openMarket); add(closeMarket); add(reset);
+		add(clear); add(openMarket); add(closeMarket); add(reset); add(logout);
 
 		MyHandler handler = new MyHandler();
 		gmsButton.addActionListener(handler);
@@ -134,7 +141,7 @@ public class AdminView extends JFrame {
 		openMarket.addActionListener(handler);
 		closeMarket.addActionListener(handler);
 		reset.addActionListener(handler);
-
+		logout.addActionListener(handler);
 
 	}
 
@@ -251,6 +258,10 @@ public class AdminView extends JFrame {
 					e.printStackTrace();
 				}
 				
+			}
+			else if(event.getSource() == logout){
+				Launcher mjf = new Launcher();
+				dispose();
 			}
 		}
 	}
