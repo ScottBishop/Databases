@@ -71,33 +71,34 @@ public class DB {
 	}
 
 	public void updateDailyBalance(Calendar calNew) throws SQLException {
-		Calendar calOld = getDate(); double balance = 0; int taxID = 0; int maxDay = 0;
+		Calendar calOld = getDate(); double balance = 0; int taxID = 0; int maxDay = 0; ArrayList<Integer> ids = new ArrayList<Integer>();
 		if(calOld.get(Calendar.DAY_OF_MONTH) != calNew.get(Calendar.DAY_OF_MONTH)){
-		String query = "select unique tax_ID from dailyBalance";
-		ResultSet rs = stmt.executeQuery (query);
-		while (rs.next()){
-			taxID = rs.getInt("tax_ID");
-			System.out.println(taxID);
-			query = "select MAX(day) from dailyBalance where tax_ID = '" + taxID + "'";
-			ResultSet xs = stmt.executeQuery(query);
-			while(xs.next()){
-				maxDay = xs.getInt(1);
+			String query = "select unique tax_ID from dailyBalance";
+			ResultSet rs = stmt.executeQuery (query);
+			while (rs.next()){
+				ids.add(rs.getInt("tax_ID"));
 			}
-			query = "update dailyBalance set daysAtBalance = " + (calNew.get(Calendar.DAY_OF_MONTH) - maxDay) + " where day = '" + maxDay + "' and tax_ID = '" + taxID + "'";
-			xs = stmt.executeQuery(query);
-			
-			query = "select balance from market where tax_ID = '" + taxID + "'";
-			xs = stmt.executeQuery(query);
-			while(xs.next()){
-				balance = xs.getDouble("balance");
+			for(int x = 0; x < ids.size(); x++){
+				query = "select MAX(day) from dailyBalance where tax_ID = '" + ids.get(x) + "'";
+				ResultSet xs = stmt.executeQuery(query);
+				while(xs.next()){
+					maxDay = xs.getInt(1);
+				}
+				query = "update dailyBalance set daysAtBalance = " + (calNew.get(Calendar.DAY_OF_MONTH) - maxDay) + " where day = '" + maxDay + "' and tax_ID = '" + ids.get(x) + "'";
+				xs = stmt.executeQuery(query);
+
+				query = "select balance from market where tax_ID = '" + ids.get(x) + "'";
+				xs = stmt.executeQuery(query);
+				while(xs.next()){
+					balance = xs.getDouble("balance");
+				}
+				query = "insert into dailyBalance values(" + ids.get(x) + "," + (calNew.get(Calendar.MONTH) + 1) + "," +  calNew.get(Calendar.DAY_OF_MONTH) + "," + calNew.get(Calendar.YEAR) + ","
+					+ balance + "," + (calNew.getActualMaximum(Calendar.DAY_OF_MONTH) - calNew.get(Calendar.DAY_OF_MONTH) + 1) + ")";
+				xs = stmt.executeQuery(query);
+				xs.close();
 			}
-			query = "insert into dailyBalance values(" + taxID + "," + (calNew.get(Calendar.MONTH) + 1) + "," +  calNew.get(Calendar.DAY_OF_MONTH) + "," + calNew.get(Calendar.YEAR) + ","
-														+ balance + "," + (calNew.getActualMaximum(Calendar.DAY_OF_MONTH) - calNew.get(Calendar.DAY_OF_MONTH) + 1) + ")";
-			xs = stmt.executeQuery(query);
-			xs.close();
+			rs.close();
 		}
-		rs.close();
-	}
 	}
 
 	public int login(String username, String password) throws SQLException {
@@ -538,55 +539,41 @@ public void insertData() throws SQLException{
 }
 
 public void addInterest() throws SQLException{
-	Calendar cal = getDate();
+	Calendar cal = getDate(); ArrayList<Integer> ids = new ArrayList<Integer>();
 	updateDailyBalance(cal);
 	String query = "select unique tax_ID from dailyBalance";
-		ResultSet rs = stmt.executeQuery (query);
-		int taxID = 0;  
-		while (rs.next()){
-			taxID = rs.getInt("tax_ID");
-			double total = 0; double total2 =0;
-			query = "select balance, daysAtBalance from dailyBalance where tax_ID = '" + taxID + "'";
-			ResultSet xs = stmt.executeQuery(query);
-			while(xs.next()){
-				total += xs.getDouble("balance") * xs.getInt("daysAtBalance");
-			}
-			total = (total/cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-			total = total * .0025;
-			System.out.println(total);
-			total2 = total;
-			query = "select balance from Market where tax_ID = '" + taxID + "'";
-			xs = stmt.executeQuery(query);
-			while(xs.next()){
-				total += xs.getDouble("balance");
-			}
-			query = "update Market set balance = '" + total + "'";
-			xs = stmt.executeQuery(query);
-
-			query = "select earnings from Market where tax_ID = '" + taxID + "'";
-			xs = stmt.executeQuery(query);
-			while(xs.next()){
-				total2 += xs.getDouble("earnings");
-			}
-			query = "update Market set earnings = '" + total2 + "'";
-			xs = stmt.executeQuery(query);
-			xs.close();
+	ResultSet rs = stmt.executeQuery (query);
+	int taxID = 0;  
+	while (rs.next()){
+		ids.add(rs.getInt("tax_ID"));
+	}
+	for(int x = 0; x < ids.size(); x++){
+		double total = 0; double total2 =0;
+		query = "select balance, daysAtBalance from dailyBalance where tax_ID = '" + ids.get(x) + "'";
+		ResultSet xs = stmt.executeQuery(query);
+		while(xs.next()){
+			total += xs.getDouble("balance") * xs.getInt("daysAtBalance");
 		}
-		rs.close();
+		total = (total/(cal.getActualMaximum(Calendar.DAY_OF_MONTH) + 1));
+		total = total * 0.0025;
+		total2 = total;
+		query = "select balance from Market where tax_ID = '" + ids.get(x) + "'";
+		xs = stmt.executeQuery(query);
+		while(xs.next()){
+			total += xs.getDouble("balance");
+		}
+		query = "update Market set balance = '" + total + "' where tax_ID = '" + ids.get(x) + "'";
+		xs = stmt.executeQuery(query);
+
+		query = "select earnings from Market where tax_ID = '" + ids.get(x) + "'";
+		xs = stmt.executeQuery(query);
+		while(xs.next()){
+			total2 += xs.getDouble("earnings");
+		}
+		query = "update Market set earnings = '" + total2 + "' where tax_ID = '" + ids.get(x) + "'";
+		xs = stmt.executeQuery(query);
+		xs.close();
+	}
+	rs.close();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
