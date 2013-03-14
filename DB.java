@@ -432,7 +432,7 @@ public String customerReport(int id) throws SQLException {
 
 public String monthlyStatement(int id) throws SQLException {
 	int month = getDate().get(Calendar.MONTH); int year = getDate().get(Calendar.YEAR);
-	
+
 	String name = ""; String email = ""; String result = "";
 	String query = "select name, email from Customer where tax_ID = '" + id + "'";
 	ResultSet rs = stmt.executeQuery(query);
@@ -538,6 +538,32 @@ public void insertData() throws SQLException{
 	}
 }
 
+public void toggleMarketOpenClose(Boolean open) throws SQLException{
+	if(open){
+		String query = "update marketOpen set open = 'y'";
+		ResultSet rs = stmt.executeQuery (query);
+	}
+	else{
+		String query = "update marketOpen set open = 'n'";
+		ResultSet rs = stmt.executeQuery (query);
+	}
+}
+
+public Boolean checkMarketOpen() throws SQLException{
+	String result = "";
+	String query = "select open from marketOpen";
+	ResultSet rs = stmt.executeQuery (query);
+	while (rs.next()){
+		result = rs.getString("open");
+	}
+	if(result.equals("y")){
+		return true;
+	}
+	else{
+		return false;
+	}	
+}
+
 public void addInterest() throws SQLException{
 	Calendar cal = getDate(); ArrayList<Integer> ids = new ArrayList<Integer>();
 	updateDailyBalance(cal);
@@ -575,5 +601,3 @@ public void addInterest() throws SQLException{
 		xs.close();
 	}
 	rs.close();
-}
-}
