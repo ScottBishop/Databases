@@ -177,7 +177,13 @@ public class AdminView extends JFrame {
 
 			}
 			else if (event.getSource() == addInterest){
-
+				try{
+					db.addInterest();
+					textArea.append("Interest has been added to all accounts \n");
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
 			}
 			else if (event.getSource() == generateDTER){
 				try{
