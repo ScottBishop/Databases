@@ -235,9 +235,9 @@ public class AdminView extends JFrame {
 			else if (event.getSource() == updateStockPrice){
 				String stockID = updateStockField.getText();
 				String stockPrice = updateStockPriceField.getText();
-				int intStockPrice = Integer.parseInt(stockPrice);
+				double intStockPrice = Double.parseDouble(stockPrice);
 				try{
-					db.changeStockPrice((double)intStockPrice, stockID);
+					db.changeStockPrice(intStockPrice, stockID);
 					textArea.append("Price of " + stockID + " is now " + intStockPrice);
 				}
 				catch(Exception e){
